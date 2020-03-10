@@ -1,9 +1,0 @@
-#BlueJ class context
-comment0.target=UI
-comment1.params=stage
-comment1.target=void\ start(javafx.stage.Stage)
-comment2.params=event
-comment2.target=void\ handle(javafx.event.ActionEvent)
-comment3.params=img\ bitSize
-comment3.target=javafx.scene.image.WritableImage\ pixelize(javafx.scene.image.Image,\ int)
-numComments=4
