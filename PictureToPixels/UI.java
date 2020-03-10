@@ -18,6 +18,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.PixelReader;
 import javafx.stage.FileChooser;
+import javafx.scene.paint.Color;
+import java.util.ArrayList;
+import javafx.scene.control.TextField;
 
 public class UI extends Application
 {
@@ -26,9 +29,9 @@ public class UI extends Application
     {
         // Create a new grid pane
         GridPane pane = new GridPane();
-        Label fileName = new Label("Text");
-        Button startButt = new Button("Deep Fry");
-
+        Label fileName = new Label("");
+        TextField tf = new TextField();
+        int bitSize = 8;
         Button butt = new Button("Select image");
 
         ImageView imgView = new ImageView();
@@ -37,24 +40,26 @@ public class UI extends Application
                 @Override
                 public void handle(ActionEvent event) {
                     try{
-                    FileChooser fc = new FileChooser();
-                    File f = fc.showOpenDialog(stage);
-                    Image img1 = new Image(f.toURI().toURL().toExternalForm());
-                    pane.getChildren().clear();
-                    //imgView.setImage(img1);
-                    imgView.setImage(pixelize(img1));
-                    pane.add(imgView, 0, 0);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
+                        FileChooser fc = new FileChooser();
+                        File f = fc.showOpenDialog(stage);
+                        Image img1 = new Image(f.toURI().toURL().toExternalForm());
+
+                        //imgView.setImage(img1);
+                        imgView.setImage(pixelize(img1, bitSize));
+                        pane.add(imgView, 0, 3);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
             });
 
-        imgView.setFitHeight(800);
-        imgView.setFitWidth(800);
+        //Need to set something up to make this size nicely/accurately
+        imgView.setFitHeight(600);
+        imgView.setFitWidth(600);
 
         // Add the button and label into the pane
         pane.add(butt,0,0);
+        pane.add(tf,1,0);
 
         // JavaFX must have a Scene (window content) inside a Stage (window)
         Scene scene = new Scene(pane, 400,400);
@@ -65,35 +70,42 @@ public class UI extends Application
         stage.show();
     }
 
-    public WritableImage pixelize(Image img){
+    public WritableImage pixelize(Image img, int bitSize){
         WritableImage wImage = new WritableImage((int)img.getWidth(), (int)img.getHeight());
         PixelReader pReader = img.getPixelReader();
-        System.out.println(img.getWidth());
-        System.out.println(img.getHeight());
         PixelWriter pWriter = wImage.getPixelWriter();
-        for(int x = 0; x < (int)img.getHeight()-1; x++){
+        for(int x = 0; x < (int)img.getHeight()-bitSize; x+=bitSize){
 
             //System.out.println("X: "+ x);
-            for(int y = 0; y < (int)img.getWidth()-1; y++){
-                double centerPixel = pReader.getArgb(x,y);
-                double southPixel = pReader.getArgb(x+1,y);
-                double eastPixel = pReader.getArgb(x,y+1);
-                double southEastPixel = pReader.getArgb((x)+1,(y)+1);
-                int averageOfNearbyPixels = (int)(centerPixel + southPixel + eastPixel + southEastPixel/4);
+            for(int y = 0; y < (int)img.getWidth()-bitSize; y+=bitSize){
 
-                /* For testing when I was squaring and rooting, slows it
-                 * down a lot though so I commented it out.
-                System.out.println("Center Pixel: " + centerPixel);
-                System.out.println("South Pixel: " + southPixel);
-                System.out.println("East Pixel: " + eastPixel);
-                System.out.println("SouthEast Pixel: " + southEastPixel);
-                System.out.println("Average Pixel: " + averageOfNearbyPixels);
-                System.out.println();
-                 */
-                pWriter.setArgb(x,y, averageOfNearbyPixels);
-                pWriter.setArgb(x+1,y, averageOfNearbyPixels);
-                pWriter.setArgb(x,y+1, averageOfNearbyPixels);
-                pWriter.setArgb(x+1,y+1, averageOfNearbyPixels);
+                ArrayList<Color> averagePixels = new ArrayList<Color>();
+                for(int i = x; i < x+bitSize; i++){
+                    for(int j = y; j < y+bitSize; j++){
+                        averagePixels.add(pReader.getColor(y,x));
+                    }
+                }
+
+                double averageReds = 0;
+                double averageGreens = 0;
+                double averageBlues = 0;
+                double averageOpacities = 0;
+                for(Color pixel : averagePixels){
+                    averageReds += pixel.getRed();
+                    averageGreens += pixel.getGreen();
+                    averageBlues += pixel.getBlue();
+                    averageOpacities += pixel.getOpacity();
+                }
+                Color averageOfNearbyPixels = new Color(
+                        averageReds /= averagePixels.size(),
+                        averageGreens /= averagePixels.size(),
+                        averageBlues /= averagePixels.size(),
+                        averageOpacities /= averagePixels.size());
+                for(int i = x; i < x+bitSize; i++){
+                    for(int j = y; j < y+bitSize; j++){
+                        pWriter.setColor(j,i, averageOfNearbyPixels);
+                    }
+                }
 
             }
         }
