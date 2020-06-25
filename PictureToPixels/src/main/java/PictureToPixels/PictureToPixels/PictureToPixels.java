@@ -1,4 +1,4 @@
-package PictureToPixels.PictureToPixels;
+ 
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -175,8 +175,8 @@ public class PictureToPixels extends Application{
 			//Creates a new imageview to display the writable image
             ImageView pixelizedImage = new ImageView(wImage);
 			//sets the window size to fit 1200x800
-            pixelizedImage.setFitHeight(1200);
-            pixelizedImage.setFitWidth(800);
+            pixelizedImage.setFitHeight(500);
+            pixelizedImage.setFitWidth(600);
 			//preserves ratio so it doesn't warp image
             pixelizedImage.setPreserveRatio(true);
 			
