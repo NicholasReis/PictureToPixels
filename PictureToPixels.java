@@ -23,133 +23,114 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.PixelReader;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class PictureToPixels extends Application {
-    // sets the pixel ration to 1 by default
+public class PictureToPixels extends Application{
+    //sets the pixel ration to 1 by default
     int bitSize = 1;
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         launch(args);
     }
 
     @Override
-    public void start(Stage theStage) {
-        PhotoChoice PC = new PhotoChoice();
-        WritableCanvasCreator WCC = new WritableCanvasCreator();
+    public void start(Stage theStage){
         Stage stage = theStage;
-        // Label to welcome
+        //Label to welcome
         Label welcomeLabel = new Label("Welcome. To continue please choose a photo.");
-        // Button to select a photo through file explorer
+        //Button to select a photo through file explorer
         Button imageSelectButton = new Button("Select photo");
-        // Calls photoChoice with the related action event when the button is pressed
+        //Calls photoChoice with the related action event when the button is pressed
         imageSelectButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
-                Image img = PC.photoChoice();
+                @Override  
+                public void handle(ActionEvent arg0) {
+                    drawGUI(stage);
+                }  
+            });
 
-                // calls imgToWritable which converts the image to a writable image so it can be
-                // editted
-                WritableImage writableCanvas = WCC.imgToWritable(img);
-
-                stage.setScene(drawGUI(PC, WCC, img, writableCanvas));
-            }
-        });
-
-        // Adds the label and button to a vertical box
+        //Adds the label and button to a vertical box
         VBox group = new VBox(10, welcomeLabel, imageSelectButton);
-        // centers the vertical box
+        //centers the vertical box
         group.setAlignment(Pos.CENTER);
 
-        // puts the vbox into the scene
-        Scene scene = new Scene(group, 300, 100);
-        // sets the title for the window
+        //puts the vbox into the scene
+        Scene scene = new Scene(group, 300,100);
+        //sets the title for the window
         stage.setTitle("Picture to Pixel");
-        // puts the scene into the stage
+        //puts the scene into the stage
         stage.setScene(scene);
-        // Shows the stage
+        //Shows the stage
         stage.show();
     }
 
-    private Scene drawGUI(PhotoChoice PC, WritableCanvasCreator WCC, Image img, WritableImage wImage) {
+    private void drawGUI(Stage stage){
+        PhotoChoice PC = new PhotoChoice();
         PhotoEditor PE = new PhotoEditor();
-        // Creates a new imageview to display the writable image
-        ImageView pixelizedImage = new ImageView(wImage);
-        // sets the window size to fit 1200x800
-        pixelizedImage.setFitHeight(500);
-        pixelizedImage.setFitWidth(600);
-        // preserves ratio so it doesn't warp image
-        pixelizedImage.setPreserveRatio(true);
 
-        // Creates a button to select a new image
+        //Creates a new imageview to display the writable image
+        ImageView pixelizedImage = new ImageView(PC.getWritableImage());
+
+        if(PC.imageChosen()){
+            //sets the window size to fit 1200x800
+            pixelizedImage.setFitHeight(500);
+            pixelizedImage.setFitWidth(600);
+            //preserves ratio so it doesn't warp image
+            pixelizedImage.setPreserveRatio(true);
+        }
+
+        //Creates a button to select a new image
         Button imageSelectButton = new Button("Select photo");
-        // On button click calls photoChoice with the related action event as a
-        // parameter
+        //On button click calls photoChoice with the related action event as a parameter
         imageSelectButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent arg0) {
-                Image img = PC.photoChoice();
+                @Override  
+                public void handle(ActionEvent arg0) {
+                    drawGUI(stage);
+                }  
+            });
 
-                // calls imgToWritable which converts the image to a writable image so it can be
-                // editted
-                WritableImage writableCanvas = WCC.imgToWritable(img);
-            }
-        });
+        //Creates a slider between 1 and 64 for the pixel ratio to pixelize,
+        //@2 it would take the average of every 2x2 pixels and average the colors,
+        //@40 it would take the average of ever 40/40 pixels and average the colors, etc
+        Slider pixelizeMeter = new Slider(1,64, 1);
 
-        // Creates a slider between 1 and 64 for the pixel ratio to pixelize,
-        // @2 it would take the average of every 2x2 pixels and average the colors,
-        // @40 it would take the average of ever 40/40 pixrls and average the colors,
-        // etc
-        Slider pixelizeMeter = new Slider(1, 64, 1);
-
-        // int bitSize = 1;
-
-        // Adds a listener to check the value of the slider
+        //Adds a listener to check the value of the slider
         pixelizeMeter.valueProperty().addListener(
-                (observable, oldvalue, newvalue) -> {
-                    // sets the bitsize to the new value of the slider
-                    final int bitSize = newvalue.intValue();
-                    // if the image exists
-                    if (wImage != null) {
-                        // calls pixelize
-                        final WritableImage pixelImage = PE.pixelize(img, bitSize);
-                        // sets the imageview to display the now pixelized image (which is why it's
-                        // global)
-                        pixelizedImage.setImage(pixelImage);
-                    }
-                });
+            (observable, oldvalue, newvalue) ->
+            {
+                //sets the bitsize to the new value of the slider
+                final int bitSize = newvalue.intValue();
+                //calls pixelize
+                final WritableImage pixelImage = PE.pixelize(PC.getWritableImage(), bitSize);
+                //sets the imageview to display the now pixelized image (which is why it's global)
+                pixelizedImage.setImage(pixelImage);
+            } );
 
-        // Label for the slider
+        //Label for the slider
         Label sliderLabel = new Label("Pixelize Meter");
-        // Button to save
+        //Button to save
         Button saveButton = new Button("Save");
-        // When the button is pressed it calls saveImage
+        //When the button is pressed it calls saveImage
 
-        // saveButton.setOnAction(this::saveImage, pixelizedImage);!!!
-
-        // Adds the label and slider to a vertical box
+        //saveButton.setOnAction(this::saveImage, pixelizedImage);!!!
+        //Adds the label and slider to a vertical box
         VBox meterAndLabel = new VBox(2, sliderLabel, pixelizeMeter);
-        // sets the label and slider to the bottome center
+        //sets the label and slider to the bottome center
         meterAndLabel.setAlignment(Pos.BOTTOM_CENTER);
 
-        // creates a horizontal box that contains the image selection button, slider and
-        // label vbox, and save button
+        //creates a horizontal box that contains the image selection button, slider and label vbox, and save button
         HBox underImage = new HBox(10, imageSelectButton, meterAndLabel, saveButton);
 
-        // sets horizontal box to the bottome center (underneath the imageview of the
-        // selected picture)
+        //sets horizontal box to the bottome center (underneath the imageview of the selected picture)
         underImage.setAlignment(Pos.BOTTOM_CENTER);
 
-        // new vertical box to store both the imageview and the toolbar
+        //new vertical box to store both the imageview and the toolbar
         VBox group = new VBox(10, pixelizedImage, underImage);
-        // sets the new vbox to the center of the window
+        //sets the new vbox to the center of the window
         group.setAlignment(Pos.BASELINE_CENTER);
 
-        // sets the padding to be 5 on the top left and right, but 30 on the bottom for
-        // more space
+        //sets the padding to be 5 on the top left and right, but 30 on the bottom for more space
         group.setPadding(new Insets(5, 5, 30, 5));
 
-        // sets the new layout in a new scene and the new scene into the stage
-        return new Scene(group);
+        //sets the new layout in a new scene and the new scene into the stage
+        stage.setScene(new Scene(group));
 
     }
-
 }
