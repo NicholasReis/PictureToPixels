@@ -68,14 +68,6 @@ public class PictureToPixels extends Application{
         //Creates a new imageview to display the writable image
         ImageView pixelizedImage = new ImageView(PC.getWritableImage());
 
-        if(PC.imageChosen()){
-            //sets the window size to fit 1200x800
-            pixelizedImage.setFitHeight(500);
-            pixelizedImage.setFitWidth(600);
-            //preserves ratio so it doesn't warp image
-            pixelizedImage.setPreserveRatio(true);
-        }
-
         //Creates a button to select a new image
         Button imageSelectButton = new Button("Select photo");
         //On button click calls photoChoice with the related action event as a parameter
@@ -86,49 +78,66 @@ public class PictureToPixels extends Application{
                 }  
             });
 
-        //Creates a slider between 1 and 64 for the pixel ratio to pixelize,
-        //@2 it would take the average of every 2x2 pixels and average the colors,
-        //@40 it would take the average of ever 40/40 pixels and average the colors, etc
-        Slider pixelizeMeter = new Slider(1,64, 1);
+            VBox group;
+        if(PC.imageChosen()){
+            //sets the window size to fit 1200x800
+            pixelizedImage.setFitHeight(500);
+            pixelizedImage.setFitWidth(600);
+            //preserves ratio so it doesn't warp image
+            pixelizedImage.setPreserveRatio(true);
 
-        //Adds a listener to check the value of the slider
-        pixelizeMeter.valueProperty().addListener(
-            (observable, oldvalue, newvalue) ->
-            {
-                //sets the bitsize to the new value of the slider
-                final int bitSize = newvalue.intValue();
-                //calls pixelize
-                final WritableImage pixelImage = PE.pixelize(PC.getWritableImage(), bitSize);
-                //sets the imageview to display the now pixelized image (which is why it's global)
-                pixelizedImage.setImage(pixelImage);
-            } );
+            //Creates a slider between 1 and 64 for the pixel ratio to pixelize,
+            //@2 it would take the average of every 2x2 pixels and average the colors,
+            //@40 it would take the average of ever 40/40 pixels and average the colors, etc
+            Slider pixelizeMeter = new Slider(1,64, 1);
 
-        //Label for the slider
-        Label sliderLabel = new Label("Pixelize Meter");
-        //Button to save
-        Button saveButton = new Button("Save");
-        //When the button is pressed it calls saveImage
+            //Adds a listener to check the value of the slider
+            pixelizeMeter.valueProperty().addListener(
+                (observable, oldvalue, newvalue) ->
+                {
+                    //sets the bitsize to the new value of the slider
+                    final int bitSize = newvalue.intValue();
+                    //calls pixelize
+                    final WritableImage pixelImage = PE.pixelize(PC.getWritableImage(), bitSize);
+                    //sets the imageview to display the now pixelized image (which is why it's global)
+                    pixelizedImage.setImage(pixelImage);
+                } );
 
-        //saveButton.setOnAction(this::saveImage, pixelizedImage);!!!
-        //Adds the label and slider to a vertical box
-        VBox meterAndLabel = new VBox(2, sliderLabel, pixelizeMeter);
-        //sets the label and slider to the bottome center
-        meterAndLabel.setAlignment(Pos.BOTTOM_CENTER);
+            //Label for the slider
+            Label sliderLabel = new Label("Pixelize Meter");
 
-        //creates a horizontal box that contains the image selection button, slider and label vbox, and save button
-        HBox underImage = new HBox(10, imageSelectButton, meterAndLabel, saveButton);
+            //Button to save
+            Button saveButton = new Button("Save");
+            //When the button is pressed it calls saveImage
 
-        //sets horizontal box to the bottome center (underneath the imageview of the selected picture)
-        underImage.setAlignment(Pos.BOTTOM_CENTER);
+            //saveButton.setOnAction(this::saveImage, pixelizedImage);!!!
+            //Adds the label and slider to a vertical box
+            VBox meterAndLabel = new VBox(2, sliderLabel, pixelizeMeter);
+            //sets the label and slider to the bottome center
+            meterAndLabel.setAlignment(Pos.BOTTOM_CENTER);
 
-        //new vertical box to store both the imageview and the toolbar
-        VBox group = new VBox(10, pixelizedImage, underImage);
-        //sets the new vbox to the center of the window
-        group.setAlignment(Pos.BASELINE_CENTER);
+            //creates a horizontal box that contains the image selection button, slider and label vbox, and save button
+            HBox underImage = new HBox(10, imageSelectButton, meterAndLabel, saveButton);
 
-        //sets the padding to be 5 on the top left and right, but 30 on the bottom for more space
-        group.setPadding(new Insets(5, 5, 30, 5));
+            //sets horizontal box to the bottome center (underneath the imageview of the selected picture)
+            underImage.setAlignment(Pos.BOTTOM_CENTER);
 
+            //new vertical box to store both the imageview and the toolbar
+            group = new VBox(10, pixelizedImage, underImage);
+            //sets the new vbox to the center of the window
+            group.setAlignment(Pos.BASELINE_CENTER);
+
+            //sets the padding to be 5 on the top left and right, but 30 on the bottom for more space
+            
+        }else{
+            //Adds the label and button to a vertical box
+            group = new VBox(10, imageSelectButton);
+            //centers the vertical box
+            group.setAlignment(Pos.CENTER);
+
+        }
+
+        group.setPadding(new Insets(10, 10, 10, 10));
         //sets the new layout in a new scene and the new scene into the stage
         stage.setScene(new Scene(group));
 
