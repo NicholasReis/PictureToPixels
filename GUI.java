@@ -87,8 +87,9 @@ public class GUI{
                 final int bitSize = newvalue.intValue();
                 //calls pixelize
                 final WritableImage pixelImage = pixelator.pixelize(PC.getWritableImage(), bitSize);
-                //sets the imageview to display the now pixelized image (which is why it's global)
+                //sets the imageview to display the now pixelized image
                 pixelizedImage.setImage(pixelImage);
+                System.out.println("Value Changed.");
             } );
 
         //Label for the slider
@@ -98,7 +99,12 @@ public class GUI{
         Button saveButton = new Button("Save");
         //When the button is pressed it calls saveImage
 
-        //saveButton.setOnAction(this::saveImage, pixelizedImage);!!!
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override  
+                public void handle(ActionEvent arg0) {
+                    PC.saveImage(pixelizedImage.getImage());
+                }  
+            });
         //Adds the label and slider to a vertical box
         VBox meterAndLabel = new VBox(2, sliderLabel, pixelizeMeter);
         //sets the label and slider to the bottome center

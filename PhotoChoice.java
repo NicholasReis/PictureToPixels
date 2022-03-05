@@ -76,8 +76,8 @@ public class PhotoChoice
         return wImage;
     }
     
-    /*
-    private void saveImage(ActionEvent event, ImageView imgV){
+    
+    public void saveImage(Image img){
         try{
             //Creates another filechooser window to save the pixelized image
             FileChooser fc = new FileChooser();
@@ -107,5 +107,5 @@ public class PhotoChoice
             e.printStackTrace();
         }
     }
-    */
+    
 }
