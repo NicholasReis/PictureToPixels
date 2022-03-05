@@ -29,13 +29,14 @@ public class GUI{
                 @Override  
                 public void handle(ActionEvent arg0) {
                     selectionScreen();
-                }  
+                }
             });
 
         //Adds the label and button to a vertical box
         VBox group = new VBox(10, welcomeLabel, imageSelectButton);
         //centers the vertical box
         group.setAlignment(Pos.CENTER);
+        group.setPadding(new Insets(10,10,10,10));
 
         stage.setScene(new Scene(group));
     }
@@ -108,7 +109,7 @@ public class GUI{
         VBox group = new VBox(10, pixelizedImage, underImage);
         //sets the new vbox to the center of the window
         group.setAlignment(Pos.BASELINE_CENTER);
-
+        group.setPadding(new Insets(10,10,10,10));
         stage.setScene(new Scene(group));
     }
 
@@ -129,6 +130,7 @@ public class GUI{
         group = new VBox(10, imageSelectButton);
         //centers the vertical box
         group.setAlignment(Pos.CENTER);
+        group.setPadding(new Insets(10,10,10,10));
 
         stage.setScene(new Scene(group));
     }
