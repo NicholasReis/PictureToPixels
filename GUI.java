@@ -28,7 +28,7 @@ public class GUI{
         imageSelectButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override  
                 public void handle(ActionEvent arg0) {
-                    selectionScreen();
+                    pickPhoto();
                 }
             });
 
@@ -41,8 +41,7 @@ public class GUI{
         stage.setScene(new Scene(group));
     }
 
-    public void selectionScreen(){
-        PhotoChoice PC = new PhotoChoice();
+    public void selectionScreen(PhotoChoice PC){
         Pixelator pixelator = new Pixelator();
 
         //Creates a new imageview to display the writable image
@@ -54,7 +53,7 @@ public class GUI{
         imageSelectButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override  
                 public void handle(ActionEvent arg0) {
-                    selectionScreen();
+                    pickPhoto();
                 }  
             });
 
@@ -111,6 +110,7 @@ public class GUI{
         group.setAlignment(Pos.BASELINE_CENTER);
         group.setPadding(new Insets(10,10,10,10));
         stage.setScene(new Scene(group));
+    
     }
 
     public void imageScreen(){
@@ -119,7 +119,7 @@ public class GUI{
         imageSelectButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override  
                 public void handle(ActionEvent arg0) {
-                    selectionScreen();
+                    pickPhoto();
                 }  
             });
         //Adds the label and button to a vertical box
@@ -133,5 +133,14 @@ public class GUI{
         group.setPadding(new Insets(10,10,10,10));
 
         stage.setScene(new Scene(group));
+    }
+
+    public void pickPhoto(){
+        PhotoChoice PC = new PhotoChoice();
+        if(!PC.imageChosen()){
+            welcomeScreen();
+        }else{
+            selectionScreen(PC);
+        }
     }
 }
