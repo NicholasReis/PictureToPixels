@@ -2,8 +2,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class PictureToPixels extends Application{
-    //sets the pixel ration to 1 by default
-    int bitSize = 1;
 
     public static void main(String[] args){
         launch(args);
